@@ -16,92 +16,93 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-class Card
-{
-  // ---------------- Fields ----------------
-  
-  private static final int cardWidth = 100;
-  private static final int cardHeight = 100;
-  
-  private final String cardName;
-  private final int cardId;
-  
-  private final int leftCornerX;
-  private final int leftCornerY;
-  private final int rightCornerX;
-  private final int rightCornerY;
-  
-  private boolean isFlipped;
-  
-  // ---------------- Constructor ----------------
-  
-  public Card( String cardName, int cardId, int rowIndex, int colIndex )
-  {
-    this.cardName = cardName;
-    
-    this.cardId = cardId;
-    
-    this.leftCornerX = ( rowIndex * cardWidth ) + 10;
-    this.leftCornerY = ( colIndex * cardHeight ) + 10;
-    this.rightCornerX = ( ( rowIndex + 1 ) * cardWidth );
-    this.rightCornerY = ( ( colIndex + 1 ) * cardHeight );
-    
-    this.isFlipped = false;
-  }
-  
-  // ---------------- Methods ----------------
-  
-  public void Update()
-  {
-    // Nothing to do.
-  }
-  
-  public void Draw()
-  {
-    rectMode( CORNERS );
-    stroke( 0 );
-    fill( 255 );
-    rect(
-        this.leftCornerX,
-        this.leftCornerY,
-        this.rightCornerX,
-        this.rightCornerY
-    );
-    
-    fill( 0 );
-    
-    String str;
-    if( this.isFlipped )
-    {
-      textSize( 12 );
-      str = this.cardName;
-    }
-    else
-    {
-      textSize( 40 );
-      str = "" + this.cardId;
-    }
-    
-    textAlign( CENTER ,CENTER );
-    text(
-        str,
-        this.leftCornerX,
-        this.leftCornerY,
-        this.rightCornerX,
-        this.rightCornerY
-    );
-  }
+ArrayList<Card> cards;
+Button restartButton;
 
-  public void OnMouseClick()
+void setup()
+{
+  size( 500, 575 );
+  background( 255 );
+  
+  restartButton = new Button( "Reset", 300, 500, 440, 550  );
+  Restart();
+}
+
+void Restart()
+{
+  cards = new ArrayList<Card>();
+  ArrayList<String> cardNames = new ArrayList<String>();
+  
+  // From Requirement 2:
+  
+  // Thematic Game Elements
+  cardNames.add( "Story" );
+  cardNames.add( "Setting" );
+  cardNames.add( "Characters" );
+  
+  // Gameplay Elements
+  cardNames.add( "Play Sequence" );
+  cardNames.add( "Level Design" );
+  cardNames.add( "Interface Design" );
+  
+  // Game Analysis
+  cardNames.add( "Difficulty" );
+  cardNames.add( "Balance" );
+  cardNames.add( "Depth" );
+  cardNames.add( "Pace" );
+  cardNames.add( "Replay Value" );
+  cardNames.add( "Age Appropriateness" );
+  
+  // Related Terms
+  cardNames.add( "Single-Player vs. Multiplayer" );
+  cardNames.add( "Cooperative vs. Competitve" );
+  cardNames.add( "Turn-Based vs. Real-Time" );
+  cardNames.add( "Strategy vs. Reflex vs. Chance" );
+  cardNames.add( "Abstract vs. Thematic" );
+  
+  int cardId = 1;
+  for( int col = 0; ( col < 5 ) && (cardNames.size() > 0 ); ++col )
   {
-      if(
-        ( mouseX > this.leftCornerX ) &&
-        ( mouseX < this.rightCornerX ) &&
-        ( mouseY > this.leftCornerY ) &&
-        ( mouseY < this.rightCornerY )
-      )
+    for( int row = 0; ( row < 4 ) && (cardNames.size() > 0 ); ++row )
     {
-      this.isFlipped = true;
+      int index = int( random( 0, cardNames.size() ) );
+      String cardName = cardNames.get( index );
+      cardNames.remove( index );
+      Card card = new Card( cardName, cardId, row, col );
+      ++cardId;
+      cards.add( card );
     }
+  }
+}
+
+void draw()
+{
+  // -------- Update --------
+  
+  for( int i = 0; i < cards.size(); ++i )
+  {
+    cards.get( i ).Update();
+  }
+  restartButton.Update();
+
+  // -------- Draw --------
+
+  for( int i = 0; i < cards.size(); ++i )
+  {
+    cards.get( i ).Draw();
+  }
+  restartButton.Draw();
+}
+
+void mouseClicked()
+{
+  for( int i = 0; i < cards.size(); ++i )
+  {
+    cards.get( i ).OnMouseClick();
+  }
+  
+  if( restartButton.OnMouseClick() )
+  {
+    Restart();
   }
 }
